@@ -4,6 +4,8 @@ import '../../features/features.dart';
 import '../core.dart';
 
 final cubitProviderUtil = [
-  BlocProvider<PokemonCubit>(create: (context) => sl<PokemonCubit>()),
-  // FavoriteCubit removed; use PokemonCubit for favorites logic
+  BlocProvider<PokemonListCubit>(create: (context) => sl<PokemonListCubit>()),
+  BlocProvider<PokemonFavoriteCubit>(create: (context) => sl<PokemonFavoriteCubit>()),
+  // Provide the PokemonDetailCubit (detail-focused) for screens that show details.
+  BlocProvider<PokemonDetailCubit>(create: (context) => sl<PokemonDetailCubit>()),
 ];

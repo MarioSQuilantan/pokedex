@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 
 import '../../../../core/core.dart';
 import '../../../features.dart';
-// ...existing code...
 
 class ImageCardWidget extends StatelessWidget {
   const ImageCardWidget({

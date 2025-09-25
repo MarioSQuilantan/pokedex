@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../application/cubit/pokemon_cubit.dart';
+import '../../../application/cubit/pokemon_favorite_cubit.dart';
+import '../../../application/cubit/pokemon_list_cubit.dart';
+import '../../../application/cubit/pokemon_favorite_state.dart';
 import '../../presentation.dart';
 
 class FavoritePokemonListMobileView extends StatefulWidget {
@@ -18,16 +20,16 @@ class _FavoritePokemonListMobileViewState extends State<FavoritePokemonListMobil
     super.initState();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final cubit = context.read<PokemonCubit>();
-      if (cubit.state is! PokemonFavoriteListLoaded) {
-        cubit.onGetFavoritePokemonList();
+      final favCubit = context.read<PokemonFavoriteCubit>();
+      if (favCubit.state is! PokemonFavoriteLoaded) {
+        favCubit.onGetFavoritePokemonList();
       }
     });
   }
 
   void _onFavoriteChanged() {
-    final cubit = context.read<PokemonCubit>();
-    cubit.onGetFavoritePokemonList();
+    final favCubit = context.read<PokemonFavoriteCubit>();
+    favCubit.onGetFavoritePokemonList();
   }
 
   @override
@@ -38,28 +40,28 @@ class _FavoritePokemonListMobileViewState extends State<FavoritePokemonListMobil
         leading: BackButton(
           color: Colors.black,
           onPressed: () {
-            final cubit = context.read<PokemonCubit>();
+            final listCubit = context.read<PokemonListCubit>();
             context.pop();
-            cubit.emitCurrentList();
+            listCubit.emitCurrentList();
           },
         ),
       ),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(8.0),
-          child: BlocConsumer<PokemonCubit, PokemonState>(
+          child: BlocConsumer<PokemonFavoriteCubit, PokemonFavoriteState>(
             listener: (context, state) {},
             builder: (context, state) {
-              if (state is PokemonLoading) {
+              if (state is PokemonFavoriteLoading) {
                 return const Center(child: CircularProgressIndicator());
               }
 
-              if (state is PokemonFailure) {
+              if (state is PokemonFavoriteFailure) {
                 return Center(child: Text(state.message));
               }
 
-              if (state is PokemonFavoriteListLoaded) {
-                final pokemons = state.pokemonFavoriteList;
+              if (state is PokemonFavoriteLoaded) {
+                final pokemons = state.favoriteList;
 
                 if (pokemons.isEmpty) {
                   return const Center(
@@ -83,9 +85,11 @@ class _FavoritePokemonListMobileViewState extends State<FavoritePokemonListMobil
                       updateFavoriteList: true,
                       onFavoriteChanged: _onFavoriteChanged,
                       onTap: () async {
-                        final cubit = context.read<PokemonCubit>();
+                        final favCubit = context.read<PokemonFavoriteCubit>();
+                        final listCubit = context.read<PokemonListCubit>();
                         await context.pushNamed(PokemonDetailScreen.name, pathParameters: {'id': '${pokemon.id}'});
-                        cubit.emitFavoriteList();
+                        favCubit.onGetFavoritePokemonList();
+                        listCubit.emitCurrentList();
                       },
                     );
                   },

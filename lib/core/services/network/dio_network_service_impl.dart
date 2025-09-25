@@ -13,13 +13,7 @@ class DioNetworkServiceImpl implements NetworkService {
   @override
   TaskEither<NetworkException, T> get<T>(String path, {Map<String, dynamic>? queryParameters, bool useToken = true}) {
     return TaskEither.tryCatch(() async {
-      // final options = await _buildRequestOptions(useToken);
-
-      final response = await dio.get(
-        path,
-        queryParameters: queryParameters,
-        // options: options,
-      );
+      final response = await dio.get(path, queryParameters: queryParameters);
       return response.data as T;
     }, (e, _) => _handleDioError(e));
   }
@@ -32,14 +26,7 @@ class DioNetworkServiceImpl implements NetworkService {
     bool useToken = true,
   }) {
     return TaskEither.tryCatch(() async {
-      // final options = await _buildRequestOptions(useToken);
-
-      final response = await dio.post(
-        path,
-        data: data,
-        queryParameters: queryParameters,
-        // options: options,
-      );
+      final response = await dio.post(path, data: data, queryParameters: queryParameters);
       return response.data as T;
     }, (e, _) => _handleDioError(e));
   }
@@ -52,14 +39,7 @@ class DioNetworkServiceImpl implements NetworkService {
     bool useToken = true,
   }) {
     return TaskEither.tryCatch(() async {
-      // final options = await _buildRequestOptions(useToken);
-
-      final response = await dio.put(
-        path,
-        data: data,
-        queryParameters: queryParameters,
-        // options: options,
-      );
+      final response = await dio.put(path, data: data, queryParameters: queryParameters);
       return response.data as T;
     }, (e, _) => _handleDioError(e));
   }
@@ -74,12 +54,7 @@ class DioNetworkServiceImpl implements NetworkService {
     return TaskEither.tryCatch(() async {
       // final options = await _buildRequestOptions(useToken);
 
-      final response = await dio.delete(
-        path,
-        data: data,
-        queryParameters: queryParameters,
-        // options: options,
-      );
+      final response = await dio.delete(path, data: data, queryParameters: queryParameters);
       return response.data as T;
     }, (e, _) => _handleDioError(e));
   }

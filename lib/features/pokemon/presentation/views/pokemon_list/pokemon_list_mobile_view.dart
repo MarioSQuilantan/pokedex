@@ -29,7 +29,7 @@ class _PokemonListMobileViewState extends State<PokemonListMobileView> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final cubit = context.read<PokemonCubit>();
+      final cubit = context.read<PokemonListCubit>();
 
       _scrollController.addListener(() {
         if (!_scrollController.hasClients) return;
@@ -63,26 +63,26 @@ class _PokemonListMobileViewState extends State<PokemonListMobileView> {
             icon: const Icon(Icons.tune),
             color: Colors.black,
             onPressed: () {
-              final cubit = context.read<PokemonCubit>();
+              final listCubit = context.read<PokemonListCubit>();
               showDialog(
                 context: context,
                 builder: (_) => SortDialogWidget(
                   onUpward: () {
                     _searchController.clear();
-                    cubit.filterBy('');
-                    cubit.onSortUpward();
+                    listCubit.filterBy('');
+                    listCubit.onSortUpward();
                     context.pop();
                   },
                   onDownWard: () {
                     _searchController.clear();
-                    cubit.filterBy('');
-                    cubit.onSortDownward();
+                    listCubit.filterBy('');
+                    listCubit.onSortDownward();
                     context.pop();
                   },
                   onById: () {
                     _searchController.clear();
-                    cubit.filterBy('');
-                    cubit.onSortById();
+                    listCubit.filterBy('');
+                    listCubit.onSortById();
                     context.pop();
                   },
                 ),
@@ -97,7 +97,7 @@ class _PokemonListMobileViewState extends State<PokemonListMobileView> {
             padding: const EdgeInsets.all(8.0),
             child: TextField(
               controller: _searchController,
-              onChanged: (value) => context.read<PokemonCubit>().filterBy(value),
+              onChanged: (value) => context.read<PokemonListCubit>().filterBy(value),
               decoration: const InputDecoration(
                 hintText: 'Buscar Pokémon',
                 prefixIcon: Icon(Icons.search),
@@ -110,18 +110,18 @@ class _PokemonListMobileViewState extends State<PokemonListMobileView> {
       ),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
-        child: BlocBuilder<PokemonCubit, PokemonState>(
+        child: BlocBuilder<PokemonListCubit, PokemonItemsState>(
           builder: (context, state) {
-            if (state is PokemonLoading) {
+            if (state is PokemonItemsLoading) {
               return const Center(child: CircularProgressIndicator());
             }
 
-            if (state is PokemonFailure) {
+            if (state is PokemonItemsFailure) {
               return Center(child: Text(state.message));
             }
 
-            if (state is PokemonListLoaded) {
-              final pokemons = state.pokemonList;
+            if (state is PokemonItemsLoaded) {
+              final pokemons = state.items;
 
               return GridView.builder(
                 itemCount: pokemons.length,
@@ -145,7 +145,6 @@ class _PokemonListMobileViewState extends State<PokemonListMobileView> {
               );
             }
 
-            // default empty state
             return const SizedBox.shrink();
           },
         ),

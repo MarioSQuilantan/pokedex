@@ -21,7 +21,7 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final cubit = context.read<PokemonCubit>();
+      final cubit = context.read<PokemonDetailCubit>();
       cubit.onGetPokemonDetailById(id: widget.pokemonId);
     });
   }

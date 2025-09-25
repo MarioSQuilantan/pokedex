@@ -16,25 +16,25 @@ class SortDialogWidget extends StatelessWidget {
       contentPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
       content: Column(
         mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           const Text(
             'Ordenar por:',
             style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: Colors.black),
           ),
           GapWidget(12),
-          InkWell(
-            onTap: onUpward,
+          TextButton(
+            onPressed: onUpward,
             child: Text('Nombre ascendente', style: TextStyle(fontSize: 18, color: Colors.black)),
           ),
           GapWidget(12),
-          InkWell(
-            onTap: onDownWard,
+          TextButton(
+            onPressed: onDownWard,
             child: Text('Nombre descendente', style: TextStyle(fontSize: 18, color: Colors.black)),
           ),
           GapWidget(12),
-          InkWell(
-            onTap: onById,
+          TextButton(
+            onPressed: onById,
             child: Text('Id', style: TextStyle(fontSize: 18, color: Colors.black)),
           ),
         ],

@@ -19,8 +19,12 @@ import 'package:pokedex/core/services/database/sfqlife_database_service_impl.dar
 import 'package:pokedex/core/services/network/dio_network_service_impl.dart'
     as _i368;
 import 'package:pokedex/features/pokemon/application/application.dart' as _i737;
-import 'package:pokedex/features/pokemon/application/cubit/pokemon_cubit.dart'
+import 'package:pokedex/features/pokemon/application/cubit/pokemon_detail_cubit.dart'
     as _i522;
+import 'package:pokedex/features/pokemon/application/cubit/pokemon_favorite_cubit.dart'
+    as _i354;
+import 'package:pokedex/features/pokemon/application/cubit/pokemon_list_cubit.dart'
+    as _i270;
 import 'package:pokedex/features/pokemon/application/use_cases/delete_favorite_pokemon_use_case.dart'
     as _i827;
 import 'package:pokedex/features/pokemon/application/use_cases/get_favorite_pokemon_list_use_case.dart'
@@ -83,14 +87,18 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i969.GetFavoritePokemonListUseCase>(
       () => _i969.GetFavoritePokemonListUseCase(gh<_i1060.PokemonRepository>()),
     );
-    gh.lazySingleton<_i522.PokemonCubit>(
-      () => _i522.PokemonCubit(
-        gh<_i737.GetPokemonListUseCase>(),
-        gh<_i737.GetPokemonDetailUseCase>(),
+    gh.lazySingleton<_i270.PokemonListCubit>(
+      () => _i270.PokemonListCubit(gh<_i737.GetPokemonListUseCase>()),
+    );
+    gh.lazySingleton<_i354.PokemonFavoriteCubit>(
+      () => _i354.PokemonFavoriteCubit(
         gh<_i737.GetFavoritePokemonListUseCase>(),
         gh<_i737.InsertFavoritePokemonUseCase>(),
         gh<_i737.DeleteFavoritePokemonUseCase>(),
       ),
+    );
+    gh.lazySingleton<_i522.PokemonDetailCubit>(
+      () => _i522.PokemonDetailCubit(gh<_i737.GetPokemonDetailUseCase>()),
     );
     return this;
   }

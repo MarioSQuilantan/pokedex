@@ -20,24 +20,31 @@ class _FavoriteButtonWidgetState extends State<FavoriteButtonWidget> {
   @override
   void initState() {
     super.initState();
-    final cubit = context.read<PokemonCubit>();
-    _isFavorite = cubit.isPokemonFavorite(widget.id);
+    final favCubit = context.read<PokemonFavoriteCubit>();
+    _isFavorite = favCubit.isPokemonFavorite(widget.id);
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!cubit.hasLoadedFavorites) cubit.loadFavoritesSilently();
+      if (!favCubit.hasLoadedFavorites) favCubit.loadFavoritesSilently();
     });
   }
 
   Future<void> _onPressed() async {
-    final cubit = context.read<PokemonCubit>();
+    final favCubit = context.read<PokemonFavoriteCubit>();
+    final listCubit = context.read<PokemonListCubit>();
     final scaffold = ScaffoldMessenger.of(context);
 
-    // optimistic update
     setState(() => _isFavorite = !(_isFavorite ?? false));
 
     try {
       if (_isFavorite == true) {
-        await cubit.onAddPokemonToFavorites(id: widget.id);
+        final pokemon = listCubit.state is PokemonItemsLoaded
+            ? (listCubit.state as PokemonItemsLoaded).items.firstWhere(
+                (p) => p.id == widget.id,
+                orElse: () => throw Exception('Pokémon no encontrado'),
+              )
+            : throw Exception('Lista no cargada');
+
+        await favCubit.addPokemonToFavorites(pokemon);
         widget.onFavoriteChanged?.call();
         scaffold.showSnackBar(
           const SnackBar(
@@ -47,7 +54,7 @@ class _FavoriteButtonWidgetState extends State<FavoriteButtonWidget> {
           ),
         );
       } else {
-        await cubit.onRemovePokemonFromFavorites(pokemonId: widget.id);
+        await favCubit.removePokemonFromFavorites(widget.id);
         widget.onFavoriteChanged?.call();
         scaffold.showSnackBar(
           const SnackBar(
@@ -58,7 +65,6 @@ class _FavoriteButtonWidgetState extends State<FavoriteButtonWidget> {
         );
       }
     } catch (e) {
-      // rollback on error
       setState(() => _isFavorite = !(_isFavorite ?? false));
       scaffold.showSnackBar(
         SnackBar(
@@ -72,11 +78,10 @@ class _FavoriteButtonWidgetState extends State<FavoriteButtonWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<PokemonCubit, PokemonState>(
+    return BlocListener<PokemonFavoriteCubit, PokemonFavoriteState>(
       listener: (context, state) {
-        // sync local optimistic state with cubit changes
-        final cubit = context.read<PokemonCubit>();
-        final fav = cubit.isPokemonFavorite(widget.id);
+        final favCubit = context.read<PokemonFavoriteCubit>();
+        final fav = favCubit.isPokemonFavorite(widget.id);
         if (mounted && fav != _isFavorite) {
           setState(() => _isFavorite = fav);
         }

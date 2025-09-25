@@ -55,13 +55,13 @@ class PokemonDetailMobileView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<PokemonCubit, PokemonState>(
+    return BlocBuilder<PokemonDetailCubit, PokemonDetailState>(
       builder: (context, state) {
-        if (state is PokemonLoading) {
+        if (state is PokemonDetailLoading) {
           return const Center(child: CircularProgressIndicator());
         }
 
-        if (state is PokemonFailure) {
+        if (state is PokemonDetailFailure) {
           return Scaffold(
             backgroundColor: Colors.red,
             body: SafeArea(
@@ -79,7 +79,6 @@ class PokemonDetailMobileView extends StatelessWidget {
             body: SafeArea(
               child: Column(
                 children: [
-                  // Header
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10),
                     child: Row(
@@ -88,9 +87,9 @@ class PokemonDetailMobileView extends StatelessWidget {
                         BackButton(
                           color: Colors.white,
                           onPressed: () {
-                            final cubit = context.read<PokemonCubit>();
+                            final listCubit = context.read<PokemonListCubit>();
                             context.pop();
-                            cubit.emitCurrentList();
+                            listCubit.emitCurrentList();
                           },
                         ),
                         Text(
@@ -108,10 +107,8 @@ class PokemonDetailMobileView extends StatelessWidget {
                     ),
                   ),
 
-                  // Pokémon Image
                   Image.network(pokemon.imageUrl, height: 150, fit: BoxFit.contain),
 
-                  // Info container
                   Expanded(
                     child: Container(
                       width: double.infinity,
@@ -274,7 +271,6 @@ class PokemonDetailMobileView extends StatelessWidget {
           );
         }
 
-        // default empty
         return const SizedBox.shrink();
       },
     );

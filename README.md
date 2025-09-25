@@ -34,7 +34,14 @@ Dev dependencies relevantes:
 La app está organizada en capas (limpia/hexagonal ligera):
 
 - Presentation: pantallas, widgets (UI)
-- Application: Cubit (`PokemonCubit`) que orquesta estados y llamadas a casos de uso
+- Application: Cubits (separación de responsabilidades)
+
+  - `PokemonListCubit`: maneja la lista de Pokémon (paginación, filtros, ordenamiento y acumulador de items).
+  - `PokemonFavoriteCubit`: maneja la lista de favoritos (carga silenciosa, añadir/quitar favorito, estado local optimista).
+  - `PokemonDetailCubit`: maneja la carga del detalle de un Pokémon.
+
+  Esta separación facilita la mantenibilidad y permite que widgets como el botón de favorito consuman solo el estado necesario.
+
 - Domain: UseCases y Entities (GetList, GetDetail, GetFavorites, Insert/Delete Favorite)
 - Data: RepositoryImpl, RemoteDataSource (API) y LocalDataSource (DB), modelos y mapeos
 - Core: servicios compartidos (NetworkService con Dio, DatabaseService con sqflite), DI con `injectable`

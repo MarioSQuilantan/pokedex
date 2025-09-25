@@ -19,9 +19,10 @@ class _PokemonListScreenState extends State<PokemonListScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final cubit = context.read<PokemonCubit>();
-      cubit.loadFavoritesSilently();
-      cubit.onGetPokemonList();
+      final listCubit = context.read<PokemonListCubit>();
+      final favCubit = context.read<PokemonFavoriteCubit>();
+      favCubit.loadFavoritesSilently();
+      listCubit.onGetPokemonList();
     });
   }
 
