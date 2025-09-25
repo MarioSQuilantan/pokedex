@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../../core/core.dart';
@@ -107,7 +108,14 @@ class PokemonDetailMobileView extends StatelessWidget {
                     ),
                   ),
 
-                  Image.network(pokemon.imageUrl, height: 150, fit: BoxFit.contain),
+                  CachedNetworkImage(
+                    imageUrl: pokemon.imageUrl,
+                    height: 150,
+                    fit: BoxFit.contain,
+                    placeholder: (context, url) => const Center(child: CircularProgressIndicator()),
+                    errorWidget: (context, url, error) =>
+                        const Center(child: Icon(Icons.error, size: 64, color: Colors.red)),
+                  ),
 
                   Expanded(
                     child: Container(

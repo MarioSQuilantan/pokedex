@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 import '../../../../core/core.dart';
 import '../../../features.dart';
@@ -37,12 +38,11 @@ class ImageCardWidget extends StatelessWidget {
                 ),
               ],
             ),
-            Image.network(
-              pokemon.imagePath,
+            CachedNetworkImage(
+              imageUrl: pokemon.imagePath,
               fit: BoxFit.contain,
-              errorBuilder: (context, error, stackTrace) {
-                return const Center(child: Icon(Icons.error, size: 64, color: Colors.red));
-              },
+              placeholder: (context, url) => const Center(child: CircularProgressIndicator()),
+              errorWidget: (context, url, error) => const Center(child: Icon(Icons.error, size: 64, color: Colors.red)),
             ),
             Text(pokemonIdFormatterUtil(pokemon.id), style: const TextStyle(fontSize: 12, color: Colors.grey)),
             Text(pokemon.name, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
