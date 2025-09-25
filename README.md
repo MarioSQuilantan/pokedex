@@ -6,6 +6,8 @@ Proyecto: Pokedex
 
 Aplicación Flutter que consume una API de Pokémon para mostrar una lista de Pokémon, detalle por Pokémon y la gestión de favoritos (persistidos localmente).
 
+Este repositorio fue refactorizado para mejorar la legibilidad y la UX: se separaron responsabilidades en cubits más pequeños, se añadió cache de imágenes y se mejoró la experiencia del botón de favoritos.
+
 ## Versión
 
 - Flutter 3.35.1
@@ -22,6 +24,7 @@ Aplicación Flutter que consume una API de Pokémon para mostrar una lista de Po
 - camera — acceso a cámara (se usa en el proyecto)
 - sqflite — almacenamiento local (favoritos)
 - path_provider, path — utilidades de archivos
+- cached_network_image — cache y placeholders para imágenes remotas
 
 Dev dependencies relevantes:
 
@@ -37,7 +40,7 @@ La app está organizada en capas (limpia/hexagonal ligera):
 - Application: Cubits (separación de responsabilidades)
 
   - `PokemonListCubit`: maneja la lista de Pokémon (paginación, filtros, ordenamiento y acumulador de items).
-  - `PokemonFavoriteCubit`: maneja la lista de favoritos (carga silenciosa, añadir/quitar favorito, estado local optimista).
+  - `PokemonFavoriteCubit`: maneja la lista de favoritos (carga silenciosa, añadir/quitar favorito, manejo de favoritos en memoria).
   - `PokemonDetailCubit`: maneja la carga del detalle de un Pokémon.
 
   Esta separación facilita la mantenibilidad y permite que widgets como el botón de favorito consuman solo el estado necesario.
@@ -45,6 +48,13 @@ La app está organizada en capas (limpia/hexagonal ligera):
 - Domain: UseCases y Entities (GetList, GetDetail, GetFavorites, Insert/Delete Favorite)
 - Data: RepositoryImpl, RemoteDataSource (API) y LocalDataSource (DB), modelos y mapeos
 - Core: servicios compartidos (NetworkService con Dio, DatabaseService con sqflite), DI con `injectable`
+
+## Cambios relevantes recientes
+
+- Se separó el monolito `PokemonCubit` en tres cubits: `PokemonListCubit`, `PokemonFavoriteCubit` y `PokemonDetailCubit`.
+- `cached_network_image` fue integrado para cachear sprites y mejorar la carga de imágenes.
+- `FavoriteButtonWidget` fue refactorizado: ahora muestra un spinner mientras procesa, aplica una actualización optimista local y se sincroniza con el bloc vía `BlocSelector` para evitar desincronizaciones.
+- Se añadieron tests unitarios focalizados para los cubits principales (list, favorites, detail).
 
 ## Cómo ejecutar la app
 
@@ -61,30 +71,43 @@ flutter run
 flutter run -d <deviceId>
 ```
 
-Nota: para Android asegúrate de tener un emulador Android o un dispositivo USB; para iOS, Xcode y un simulador o dispositivo.
+## Comandos útiles para desarrolladores
 
-## Comandos para correr los tests
+- Ejecutar linter/analizador:
 
-- Ejecutar todos los tests:
+```bash
+flutter analyze
+```
+
+- Ejecutar tests:
 
 ```bash
 flutter test
 ```
 
-## Notas útiles
-
-- Los permisos de red ya se agregaron para Android (`INTERNET`) y iOS (ATS configurado) en caso de usar API externas.
-- Si usas generación de código (injectable, envied), vuelve a ejecutar:
+- Regenerar código (injectable/envied):
 
 ```bash
 flutter pub run build_runner build --delete-conflicting-outputs
 ```
 
-## Comentarios de desarrollador
+## Notas y recomendaciones
 
-- Se hicieron algunos ajuste respecto a lo solicitado ya que la API cambio o ya no cuenta con algunos valores que se solicitaron se sustituyeron por otro como la descripcion por los tipos
-- En otros casos se descartaron como en la lista de Pokemon ya que los parametros ataque y defensa no se encuentran el filtro lo hace por nombre ascendente, descendente y por ID
+- Permisos: el permiso `INTERNET` está incluido para Android y la configuración ATS está preparada para iOS.
+- CI: se recomienda agregar un pipeline que ejecute `flutter analyze`, `flutter pub run build_runner build --delete-conflicting-outputs` y `flutter test` para evitar regresiones.
+- Testing: se añadieron tests focalizados para cubits; se recomienda ampliar cobertura a repositorios y use-cases (mockeando Dio/sqflite).
+
+## Buenas prácticas y próximos pasos sugeridos
+
+- Mover la lógica de obtención/transformación (por ejemplo, obtener el Pokémon por id) al cubit o a un use-case cuando sea posible para mantener los widgets delgados.
+- Añadir widget tests para interacciones críticas (p. ej. el `FavoriteButtonWidget` que compruebe el spinner, rollback y comportamiento optimista).
+- Implementar un CacheManager personalizado si necesitas controlar TTL y tamaño del caché de imágenes.
+- Añadir i18n (package `intl`) para soportar múltiples idiomas y extraer mensajes del UI.
 
 ## Pendientes por hacer
 
-- Cadena evolutiva (mostrar las etapas y permitir navegar entre ellas).
+- Mostrar cadena evolutiva (etapas de evolución) y navegación entre ellas.
+
+## Contacto
+
+Para dudas o propuestas, abrir un issue o PR en este repositorio.
