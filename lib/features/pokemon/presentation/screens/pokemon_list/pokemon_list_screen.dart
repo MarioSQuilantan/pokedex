@@ -1,30 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../../core/core.dart';
 import '../../../../features.dart';
 
-class PokemonListScreen extends StatefulWidget {
+class PokemonListScreen extends StatelessWidget {
   static final path = RoutePathsEnum.pokemonList.path;
   static final name = RoutePathsEnum.pokemonList.name;
 
   const PokemonListScreen({super.key});
-
-  @override
-  State<PokemonListScreen> createState() => _PokemonListScreenState();
-}
-
-class _PokemonListScreenState extends State<PokemonListScreen> {
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      final listCubit = context.read<PokemonListCubit>();
-      final favCubit = context.read<PokemonFavoriteCubit>();
-      favCubit.loadFavoritesSilently();
-      listCubit.onGetPokemonList();
-    });
-  }
 
   @override
   Widget build(BuildContext context) {

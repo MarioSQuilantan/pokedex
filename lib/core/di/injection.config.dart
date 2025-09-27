@@ -20,7 +20,7 @@ import 'package:pokedex/core/services/network/dio_network_service_impl.dart'
     as _i368;
 import 'package:pokedex/features/pokemon/application/application.dart' as _i737;
 import 'package:pokedex/features/pokemon/application/cubit/pokemon_detail_cubit.dart'
-    as _i522;
+    as _i239;
 import 'package:pokedex/features/pokemon/application/cubit/pokemon_favorite_cubit.dart'
     as _i354;
 import 'package:pokedex/features/pokemon/application/cubit/pokemon_list_cubit.dart'
@@ -75,11 +75,11 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i283.GetPokemonDetailUseCase>(
       () => _i283.GetPokemonDetailUseCase(gh<_i1060.PokemonRepository>()),
     );
-    gh.lazySingleton<_i428.GetPokemonListUseCase>(
-      () => _i428.GetPokemonListUseCase(gh<_i1060.PokemonRepository>()),
-    );
     gh.lazySingleton<_i827.DeleteFavoritePokemonUseCase>(
       () => _i827.DeleteFavoritePokemonUseCase(gh<_i1060.PokemonRepository>()),
+    );
+    gh.lazySingleton<_i428.GetPokemonListUseCase>(
+      () => _i428.GetPokemonListUseCase(gh<_i1060.PokemonRepository>()),
     );
     gh.lazySingleton<_i905.InsertFavoritePokemonUseCase>(
       () => _i905.InsertFavoritePokemonUseCase(gh<_i1060.PokemonRepository>()),
@@ -87,7 +87,7 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i969.GetFavoritePokemonListUseCase>(
       () => _i969.GetFavoritePokemonListUseCase(gh<_i1060.PokemonRepository>()),
     );
-    gh.lazySingleton<_i270.PokemonListCubit>(
+    gh.factory<_i270.PokemonListCubit>(
       () => _i270.PokemonListCubit(gh<_i737.GetPokemonListUseCase>()),
     );
     gh.lazySingleton<_i354.PokemonFavoriteCubit>(
@@ -97,8 +97,8 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i737.DeleteFavoritePokemonUseCase>(),
       ),
     );
-    gh.lazySingleton<_i522.PokemonDetailCubit>(
-      () => _i522.PokemonDetailCubit(gh<_i737.GetPokemonDetailUseCase>()),
+    gh.factory<_i239.PokemonDetailCubit>(
+      () => _i239.PokemonDetailCubit(gh<_i737.GetPokemonDetailUseCase>()),
     );
     return this;
   }

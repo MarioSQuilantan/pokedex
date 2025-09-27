@@ -7,7 +7,7 @@ import '../../domain/domain.dart';
 
 part 'pokemon_detail_state.dart';
 
-@lazySingleton
+@injectable
 class PokemonDetailCubit extends Cubit<PokemonDetailState> {
   final GetPokemonDetailUseCase _getPokemonDetailUseCase;
 

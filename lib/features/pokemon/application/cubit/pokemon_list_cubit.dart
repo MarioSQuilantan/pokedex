@@ -7,7 +7,7 @@ import '../../domain/domain.dart';
 import '../../data/data.dart';
 import 'sort_mode.dart' as sm;
 
-@lazySingleton
+@injectable
 class PokemonListCubit extends Cubit<PokemonItemsState> {
   final GetPokemonListUseCase _getPokemonListUseCase;
 

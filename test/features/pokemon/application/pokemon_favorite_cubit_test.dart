@@ -1,10 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:fpdart/fpdart.dart';
-import 'package:pokedex/features/pokemon/application/application.dart';
-import 'package:pokedex/features/pokemon/domain/domain.dart';
-import 'package:pokedex/features/pokemon/data/requests/insert_favorite_pokemon_request.dart';
-import 'package:pokedex/features/pokemon/data/requests/delete_favorite_pokemon_request.dart';
-import 'package:pokedex/core/resources/network_exception.dart';
+import 'package:pokedex/core/core.dart';
+import 'package:pokedex/features/features.dart';
 
 class _FakeRepo implements PokemonRepository {
   final List<PokemonEntity> favorites = [];
@@ -24,7 +21,6 @@ class _FakeRepo implements PokemonRepository {
   @override
   Future<List<PokemonEntity>> getFavoritePokemonList() async => List<PokemonEntity>.from(favorites);
 
-  // not used in favorite cubit tests
   @override
   TaskEither<NetworkException, PokemonDetailEntity> getPokemonDetailById(request) =>
       TaskEither.left(NetworkException(message: 'not implemented'));
@@ -48,13 +44,6 @@ void main() {
 
     test('initial state is PokemonFavoriteInitial', () {
       expect(cubit.state, isA<PokemonFavoriteInitial>());
-    });
-
-    test('loadFavoritesSilently populates favorites without emitting', () async {
-      repo.favorites.add(PokemonEntity(name: 'fav', id: 10, imagePath: 'u'));
-      await cubit.loadFavoritesSilently();
-      expect(cubit.hasLoadedFavorites, true);
-      expect(cubit.isPokemonFavorite(10), true);
     });
 
     test('addPokemonToFavorites emits loaded state and marks favorite', () async {

@@ -1,18 +1,9 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:fpdart/fpdart.dart';
 
-import 'package:pokedex/features/pokemon/application/use_cases/get_pokemon_list_use_case.dart';
-import 'package:pokedex/features/pokemon/application/use_cases/get_pokemon_detail_by_id_use_case.dart';
-import 'package:pokedex/features/pokemon/application/use_cases/get_favorite_pokemon_list_use_case.dart';
-import 'package:pokedex/features/pokemon/application/use_cases/insert_favorite_pokemon_use_case.dart';
-import 'package:pokedex/features/pokemon/application/use_cases/delete_favorite_pokemon_use_case.dart';
-import 'package:pokedex/features/pokemon/domain/domain.dart';
-import 'package:pokedex/core/core.dart';
-import 'package:pokedex/features/pokemon/data/requests/get_pokemon_list_request.dart';
-import 'package:pokedex/features/pokemon/data/requests/get_pokemon_detail_request.dart';
-import 'package:pokedex/features/pokemon/data/requests/insert_favorite_pokemon_request.dart';
-import 'package:pokedex/features/pokemon/data/requests/delete_favorite_pokemon_request.dart';
 import 'package:flutter/material.dart';
+import 'package:pokedex/core/core.dart';
+import 'package:pokedex/features/features.dart';
 
 class _FakeRepo implements PokemonRepository {
   final List<PokemonEntity> list;

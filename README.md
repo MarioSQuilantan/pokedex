@@ -91,23 +91,6 @@ flutter test
 flutter pub run build_runner build --delete-conflicting-outputs
 ```
 
-## Notas y recomendaciones
+## Notas
 
-- Permisos: el permiso `INTERNET` está incluido para Android y la configuración ATS está preparada para iOS.
-- CI: se recomienda agregar un pipeline que ejecute `flutter analyze`, `flutter pub run build_runner build --delete-conflicting-outputs` y `flutter test` para evitar regresiones.
 - Testing: se añadieron tests focalizados para cubits; se recomienda ampliar cobertura a repositorios y use-cases (mockeando Dio/sqflite).
-
-## Buenas prácticas y próximos pasos sugeridos
-
-- Mover la lógica de obtención/transformación (por ejemplo, obtener el Pokémon por id) al cubit o a un use-case cuando sea posible para mantener los widgets delgados.
-- Añadir widget tests para interacciones críticas (p. ej. el `FavoriteButtonWidget` que compruebe el spinner, rollback y comportamiento optimista).
-- Implementar un CacheManager personalizado si necesitas controlar TTL y tamaño del caché de imágenes.
-- Añadir i18n (package `intl`) para soportar múltiples idiomas y extraer mensajes del UI.
-
-## Pendientes por hacer
-
-- Mostrar cadena evolutiva (etapas de evolución) y navegación entre ellas.
-
-## Contacto
-
-Para dudas o propuestas, abrir un issue o PR en este repositorio.

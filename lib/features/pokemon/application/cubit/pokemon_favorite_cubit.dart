@@ -1,12 +1,11 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
 
+import '../../data/data.dart';
 import '../../domain/domain.dart';
 import '../application.dart';
-import '../../data/requests/insert_favorite_pokemon_request.dart';
-import '../../data/requests/delete_favorite_pokemon_request.dart';
 
-@lazySingleton
+@injectable
 class PokemonFavoriteCubit extends Cubit<PokemonFavoriteState> {
   final GetFavoritePokemonListUseCase _getFavoritePokemonListUseCase;
   final InsertFavoritePokemonUseCase _insertFavoritePokemonUseCase;
@@ -33,16 +32,6 @@ class PokemonFavoriteCubit extends Cubit<PokemonFavoriteState> {
     emit(PokemonFavoriteLoaded(List<PokemonEntity>.from(_favoriteAccumulator)));
   }
 
-  Future<List<PokemonEntity>> loadFavoritesSilently() async {
-    if (_isFetchingFavorites) return List<PokemonEntity>.from(_favoriteAccumulator);
-    _isFetchingFavorites = true;
-    final favoritePokemons = await _getFavoritePokemonListUseCase();
-    _isFetchingFavorites = false;
-    _favoriteAccumulator.clear();
-    _favoriteAccumulator.addAll(favoritePokemons);
-    return List<PokemonEntity>.from(_favoriteAccumulator);
-  }
-
   Future<void> addPokemonToFavorites(PokemonEntity pokemon) async {
     final request = InsertFavoritePokemonRequest(id: pokemon.id, name: pokemon.name, imagePath: pokemon.imagePath);
     await _insertFavoritePokemonUseCase(request);
@@ -60,6 +49,20 @@ class PokemonFavoriteCubit extends Cubit<PokemonFavoriteState> {
   }
 
   bool isPokemonFavorite(int pokemonId) => _favoriteAccumulator.any((p) => p.id == pokemonId);
+
+  Future<bool> toggleFavoriteById({required int id, PokemonEntity? pokemon}) async {
+    final currentlyFav = isPokemonFavorite(id);
+    if (currentlyFav) {
+      await removePokemonFromFavorites(id);
+      return false;
+    } else {
+      if (pokemon == null) {
+        throw Exception('Lista no cargada');
+      }
+      await addPokemonToFavorites(pokemon);
+      return true;
+    }
+  }
 
   bool get hasLoadedFavorites => _favoriteAccumulator.isNotEmpty;
 }

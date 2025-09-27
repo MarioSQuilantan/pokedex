@@ -1,8 +1,8 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:fpdart/fpdart.dart';
 
-import 'package:pokedex/features/pokemon/data/data.dart';
 import 'package:pokedex/core/core.dart';
+import 'package:pokedex/features/features.dart';
 
 class _FakeDataSource implements PokemonDataSource {
   final List<PokemonListApiModel> listResponse;
