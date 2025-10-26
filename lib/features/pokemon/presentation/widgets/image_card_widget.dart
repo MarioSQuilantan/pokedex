@@ -28,16 +28,16 @@ class ImageCardWidget extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: <Widget>[
-                FavoriteButtonWidget(
-                  id: pokemon.id,
-                  updateFavoriteList: updateFavoriteList,
-                  onFavoriteChanged: onFavoriteChanged,
-                ),
-              ],
-            ),
+            // Row(
+            //   mainAxisAlignment: MainAxisAlignment.end,
+            //   children: <Widget>[
+            //     FavoriteButtonWidget(
+            //       id: pokemon.id,
+            //       updateFavoriteList: updateFavoriteList,
+            //       onFavoriteChanged: onFavoriteChanged,
+            //     ),
+            //   ],
+            // ),
             CachedNetworkImage(
               imageUrl: pokemon.imagePath,
               fit: BoxFit.contain,

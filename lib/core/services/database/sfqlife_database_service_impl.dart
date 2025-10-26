@@ -1,3 +1,4 @@
+import 'package:fpdart/fpdart.dart';
 import 'package:injectable/injectable.dart';
 import 'package:sqflite/sqlite_api.dart';
 
@@ -10,11 +11,20 @@ class SqfliteDatabaseServiceImpl implements DatabaseService {
   SqfliteDatabaseServiceImpl(this.database);
 
   @override
-  Future<dynamic> insert(String table, Map<String, dynamic> data) async => database.insert(table, data);
+  TaskEither<DbException, T> insert<T>(String table, Map<String, dynamic> data) => TaskEither.tryCatch(
+    () async => await database.insert(table, data) as T,
+    (error, _) => DbException(message: 'Insert failed: ${error.toString()}'),
+  );
 
   @override
-  Future<dynamic> deleteById(String table, int id) async => await database.delete(table, where: 'id = $id');
+  TaskEither<DbException, T> deleteById<T>(String table, int id) => TaskEither.tryCatch(
+    () async => await database.delete(table, where: 'id = ?', whereArgs: [id]) as T,
+    (error, _) => DbException(message: 'Delete failed: ${error.toString()}'),
+  );
 
   @override
-  Future<dynamic> get(String table) async => database.query(table);
+  TaskEither<DbException, T> get<T>(String table) => TaskEither.tryCatch(
+    () async => await database.query(table) as T,
+    (error, _) => DbException(message: 'Query failed: ${error.toString()}'),
+  );
 }

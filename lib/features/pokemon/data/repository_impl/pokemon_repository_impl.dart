@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:fpdart/fpdart.dart';
 import 'package:injectable/injectable.dart';
 
@@ -7,30 +9,50 @@ import '../data.dart';
 
 @LazySingleton(as: PokemonRepository)
 class PokemonRepositoryImpl implements PokemonRepository {
-  final PokemonDataSource dataSource;
+  final PokemonApiDataSource api;
+  final PokemonDatabaseDataSource database;
 
-  PokemonRepositoryImpl(this.dataSource);
+  final _pokemonListCtrl = StreamController<List<PokemonEntity>>.broadcast();
+
+  PokemonRepositoryImpl(this.api, this.database);
+
+  // Expose the stream as the single source of truth for the list
+  @override
+  Stream<List<PokemonEntity>> get pokemonListStream => _pokemonListCtrl.stream;
 
   @override
   TaskEither<NetworkException, List<PokemonEntity>> getPokemonList(GetPokemonListRequest request) =>
-      dataSource.getPokemonList(request).map((listOfModels) => listOfModels.map((model) => model.toEntity()).toList());
+      api.getPokemonList(request).map((listOfModels) {
+        final list = listOfModels.map((model) => model.toEntity()).toList();
+        // Emit latest list to subscribers
+        try {
+          _pokemonListCtrl.add(list);
+        } catch (_) {}
+        return list;
+      });
 
   @override
-  TaskEither<NetworkException, PokemonDetailEntity> getPokemonDetailById(GetPokemonDetailByIdRequest request) {
-    return dataSource.getPokemonDetailById(request).map((model) => model.toEntity());
+  TaskEither<NetworkException, PokemonDetailEntity> getPokemonDetailById(GetPokemonDetailByIdRequest request) =>
+      api.getPokemonDetailById(request).map((model) => model.toEntity());
+
+  @override
+  TaskEither<DbException, Unit> deleteFavoritePokemon(DeleteFavoritePokemonRequest request) =>
+      database.deleteFavoritePokemon(request);
+
+  @override
+  TaskEither<DbException, List<PokemonEntity>> getFavoritePokemonList() =>
+      database.getFavoritePokemonList().map((listOfModels) => listOfModels.toEntityList());
+
+  @override
+  TaskEither<DbException, Unit> insertFavoritePokemon(InsertFavoritePokemonRequest request) =>
+      database.insertFavoritePokemon(request).map((_) => unit);
+
+  // @override
+  // stream getter implemented above
+
+  void dispose() {
+    if (!_pokemonListCtrl.isClosed) {
+      _pokemonListCtrl.close();
+    }
   }
-
-  @override
-  Future<Unit> deleteFavoritePokemon(DeleteFavoritePokemonRequest request) async =>
-      await dataSource.deleteFavoritePokemon(request);
-
-  @override
-  Future<List<PokemonEntity>> getFavoritePokemonList() async {
-    final response = await dataSource.getFavoritePokemonList();
-    return response.toEntityList();
-  }
-
-  @override
-  Future<Unit> insertFavoritePokemon(InsertFavoritePokemonRequest request) async =>
-      await dataSource.insertFavoritePokemon(request);
 }

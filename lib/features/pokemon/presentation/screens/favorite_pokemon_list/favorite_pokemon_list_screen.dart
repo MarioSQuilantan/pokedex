@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '../../../../../core/core.dart';
-import '../../../../features.dart';
 
 class FavoritePokemonListScreen extends StatelessWidget {
   static final path = RoutePathsEnum.favoritePokemonList.path;
@@ -12,10 +11,8 @@ class FavoritePokemonListScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: ResponsiveLayoutWidget(
-        mobileView: FavoritePokemonListMobileView(),
-        desktopView: FavoritePokemonListMobileView(),
-        tabletView: FavoritePokemonListMobileView(),
+      body: SafeArea(
+        child: Padding(padding: const EdgeInsets.all(8.0), child: Container()),
       ),
     );
   }

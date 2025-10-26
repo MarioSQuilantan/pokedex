@@ -15,7 +15,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
-      providers: cubitProviderUtil,
+      providers: blocProviderUtil,
       child: Builder(
         builder: (context) {
           return MaterialApp.router(title: 'Pokedex', routerConfig: appRouter);

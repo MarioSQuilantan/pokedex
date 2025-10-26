@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../../core/core.dart';
-import '../../../../features.dart';
 
 class PokemonDetailScreen extends StatelessWidget {
   static final path = RoutePathsEnum.pokemonDetail.path;
@@ -14,14 +12,9 @@ class PokemonDetailScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider<PokemonDetailCubit>(
-      create: (_) => sl<PokemonDetailCubit>()..onGetPokemonDetailById(id: pokemonId),
-      child: Scaffold(
-        body: ResponsiveLayoutWidget(
-          mobileView: PokemonDetailMobileView(),
-          desktopView: PokemonDetailMobileView(),
-          tabletView: PokemonDetailMobileView(),
-        ),
+    return Scaffold(
+      body: SafeArea(
+        child: Padding(padding: EdgeInsetsGeometry.all(8), child: Container()),
       ),
     );
   }
