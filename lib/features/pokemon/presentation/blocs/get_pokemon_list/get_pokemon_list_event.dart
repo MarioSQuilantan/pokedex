@@ -10,3 +10,7 @@ sealed class GetPokemonListEvent extends Equatable {
 class GetPokemonList extends GetPokemonListEvent {
   const GetPokemonList();
 }
+
+class LoadMore extends GetPokemonListEvent {
+  const LoadMore();
+}

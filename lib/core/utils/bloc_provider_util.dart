@@ -8,4 +8,6 @@ final List<BlocProvider> blocProviderUtil = [
   BlocProvider<GetFavoritePokemonListBloc>(
     create: (context) => sl<GetFavoritePokemonListBloc>()..add(GetFavoritePokemonList()),
   ),
+  BlocProvider<SortPokemonListBloc>(create: (context) => sl<SortPokemonListBloc>()),
+  BlocProvider<FilterPokemonListBloc>(create: (context) => sl<FilterPokemonListBloc>()),
 ];

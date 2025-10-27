@@ -39,6 +39,8 @@ import 'package:pokedex/features/pokemon/domain/use_cases/insert_favorite_pokemo
     as _i425;
 import 'package:pokedex/features/pokemon/presentation/blocs/delete_favorite_pokemon/delete_favorite_pokemon_bloc.dart'
     as _i1022;
+import 'package:pokedex/features/pokemon/presentation/blocs/filter_pokemon_list/filter_pokemon_list_bloc.dart'
+    as _i182;
 import 'package:pokedex/features/pokemon/presentation/blocs/get_favorite_pokemon_list/get_favorite_pokemon_list_bloc.dart'
     as _i225;
 import 'package:pokedex/features/pokemon/presentation/blocs/get_pokemon_detail_by_id/get_pokemon_detail_by_id_bloc.dart'
@@ -47,6 +49,8 @@ import 'package:pokedex/features/pokemon/presentation/blocs/get_pokemon_list/get
     as _i1001;
 import 'package:pokedex/features/pokemon/presentation/blocs/insert_favorite_pokemon/insert_favorite_pokemon_bloc.dart'
     as _i370;
+import 'package:pokedex/features/pokemon/presentation/blocs/sort_pokemon_list/sort_pokemon_list_bloc.dart'
+    as _i1041;
 import 'package:sqflite/sqflite.dart' as _i779;
 import 'package:sqflite/sqlite_api.dart' as _i232;
 
@@ -61,6 +65,10 @@ extension GetItInjectableX on _i174.GetIt {
     await gh.factoryAsync<_i779.Database>(
       () => registerModule.database,
       preResolve: true,
+    );
+    gh.factory<_i1041.SortPokemonListBloc>(() => _i1041.SortPokemonListBloc());
+    gh.factory<_i182.FilterPokemonListBloc>(
+      () => _i182.FilterPokemonListBloc(),
     );
     gh.lazySingleton<_i361.Dio>(() => registerModule.dio);
     gh.lazySingleton<_i558.NetworkService>(
