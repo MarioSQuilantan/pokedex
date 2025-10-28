@@ -18,7 +18,3 @@ class SortByNameDesc extends SortPokemonListEvent {
 class SortById extends SortPokemonListEvent {
   const SortById();
 }
-
-class SortNone extends SortPokemonListEvent {
-  const SortNone();
-}

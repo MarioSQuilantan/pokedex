@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -20,8 +18,6 @@ class PokemonListScreen extends StatefulWidget {
 class _PokemonListScreenState extends State<PokemonListScreen> {
   final ScrollController _scrollController = ScrollController();
   final TextEditingController _searchController = TextEditingController();
-  Timer? _debounce;
-  String _lastQuery = '';
 
   @override
   void initState() {
@@ -42,22 +38,17 @@ class _PokemonListScreenState extends State<PokemonListScreen> {
   }
 
   void _onSearchChanged() {
-    _debounce?.cancel();
-    _debounce = Timer(const Duration(milliseconds: 300), () {
-      final query = _searchController.text.trim();
-      _lastQuery = query;
+    final query = _searchController.text.trim();
 
-      final getListState = context.read<GetPokemonListBloc>().state;
-      final baseList = getListState is GetPokemonListSuccess ? getListState.pokemonList : <PokemonEntity>[];
+    final getListState = context.read<GetPokemonListBloc>().state;
+    final baseList = getListState is GetPokemonListSuccess ? getListState.pokemonList : <PokemonEntity>[];
 
-      final targetBloc = context.read<FilterPokemonListBloc>();
-      targetBloc.add(FilterByName(query: query, baseList: baseList));
-    });
+    final targetBloc = context.read<FilterPokemonListBloc>();
+    targetBloc.add(FilterByName(query: query, baseList: baseList));
   }
 
   @override
   void dispose() {
-    _debounce?.cancel();
     _scrollController.dispose();
     _searchController.dispose();
     super.dispose();
@@ -156,7 +147,7 @@ class _PokemonListScreenState extends State<PokemonListScreen> {
                       builder: (context, sortState) {
                         final displayedList = List.of(filteredList);
 
-                        final option = sortState is SortPokemonListOption ? sortState.option : SortOption.none;
+                        final option = sortState is SortPokemonListOption ? sortState.option : SortOption.byId;
 
                         switch (option) {
                           case SortOption.nameAsc:
@@ -167,8 +158,6 @@ class _PokemonListScreenState extends State<PokemonListScreen> {
                             break;
                           case SortOption.byId:
                             displayedList.sort((a, b) => a.id.compareTo(b.id));
-                            break;
-                          case SortOption.none:
                             break;
                         }
 

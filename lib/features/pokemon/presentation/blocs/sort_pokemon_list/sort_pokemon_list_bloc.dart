@@ -7,10 +7,9 @@ part 'sort_pokemon_list_state.dart';
 
 @injectable
 class SortPokemonListBloc extends Bloc<SortPokemonListEvent, SortPokemonListState> {
-  SortPokemonListBloc() : super(const SortPokemonListInitial()) {
+  SortPokemonListBloc() : super(const SortPokemonListOption(SortOption.byId)) {
     on<SortByNameAsc>((event, emit) => emit(const SortPokemonListOption(SortOption.nameAsc)));
     on<SortByNameDesc>((event, emit) => emit(const SortPokemonListOption(SortOption.nameDesc)));
     on<SortById>((event, emit) => emit(const SortPokemonListOption(SortOption.byId)));
-    on<SortNone>((event, emit) => emit(const SortPokemonListOption(SortOption.none)));
   }
 }

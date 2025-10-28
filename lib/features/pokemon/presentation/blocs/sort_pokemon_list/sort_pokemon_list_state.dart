@@ -1,6 +1,6 @@
 part of 'sort_pokemon_list_bloc.dart';
 
-enum SortOption { none, nameAsc, nameDesc, byId }
+enum SortOption { nameAsc, nameDesc, byId }
 
 sealed class SortPokemonListState extends Equatable {
   const SortPokemonListState();
