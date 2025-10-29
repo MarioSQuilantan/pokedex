@@ -29,7 +29,7 @@ class _PokemonListScreenState extends State<PokemonListScreen> {
         final maxScroll = _scrollController.position.maxScrollExtent;
         final currentScroll = _scrollController.position.pixels;
         if (maxScroll - currentScroll <= 300) {
-          context.read<GetPokemonListBloc>().add(LoadMore());
+          context.read<GetPokemonListCubit>().loadMore();
         }
       });
     });
@@ -37,15 +37,7 @@ class _PokemonListScreenState extends State<PokemonListScreen> {
     _searchController.addListener(_onSearchChanged);
   }
 
-  void _onSearchChanged() {
-    final query = _searchController.text.trim();
-
-    final getListState = context.read<GetPokemonListBloc>().state;
-    final baseList = getListState is GetPokemonListSuccess ? getListState.pokemonList : <PokemonEntity>[];
-
-    final targetBloc = context.read<FilterPokemonListBloc>();
-    targetBloc.add(FilterByName(query: query, baseList: baseList));
-  }
+  void _onSearchChanged() {}
 
   @override
   void dispose() {
@@ -57,32 +49,7 @@ class _PokemonListScreenState extends State<PokemonListScreen> {
   void _openSortDialog(BuildContext context) {
     showDialog(
       context: context,
-      builder: (_) => SortDialogWidget(
-        onUpward: () {
-          _searchController.clear();
-          final getListState = context.read<GetPokemonListBloc>().state;
-          final baseList = getListState is GetPokemonListSuccess ? getListState.pokemonList : <PokemonEntity>[];
-          context.read<FilterPokemonListBloc>().add(FilterByName(query: '', baseList: baseList));
-          context.read<SortPokemonListBloc>().add(const SortByNameAsc());
-          context.pop();
-        },
-        onDownWard: () {
-          _searchController.clear();
-          final getListState = context.read<GetPokemonListBloc>().state;
-          final baseList = getListState is GetPokemonListSuccess ? getListState.pokemonList : <PokemonEntity>[];
-          context.read<FilterPokemonListBloc>().add(FilterByName(query: '', baseList: baseList));
-          context.read<SortPokemonListBloc>().add(const SortByNameDesc());
-          context.pop();
-        },
-        onById: () {
-          _searchController.clear();
-          final getListState = context.read<GetPokemonListBloc>().state;
-          final baseList = getListState is GetPokemonListSuccess ? getListState.pokemonList : <PokemonEntity>[];
-          context.read<FilterPokemonListBloc>().add(FilterByName(query: '', baseList: baseList));
-          context.read<SortPokemonListBloc>().add(const SortById());
-          context.pop();
-        },
-      ),
+      builder: (_) => SortDialogWidget(onUpward: () {}, onDownWard: () {}, onById: () {}),
     );
   }
 
@@ -125,71 +92,47 @@ class _PokemonListScreenState extends State<PokemonListScreen> {
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(8.0),
-          child: BlocBuilder<GetPokemonListBloc, GetPokemonListState>(
-            builder: (context, pokemonListState) {
-              if (pokemonListState is GetPokemonListLoading) {
-                return const Center(child: CircularProgressIndicator());
-              }
-
-              if (pokemonListState is GetPokemonListError) {
-                return Center(child: Text(pokemonListState.message));
-              }
-
-              if (pokemonListState is GetPokemonListSuccess) {
-                return BlocBuilder<FilterPokemonListBloc, FilterPokemonListState>(
-                  builder: (context, filterState) {
-                    final sourceList = pokemonListState.pokemonList;
-                    final filteredList = filterState is FilterPokemonListFiltered
-                        ? filterState.filteredList
-                        : sourceList;
-
-                    return BlocBuilder<SortPokemonListBloc, SortPokemonListState>(
-                      builder: (context, sortState) {
-                        final displayedList = List.of(filteredList);
-
-                        final option = sortState is SortPokemonListOption ? sortState.option : SortOption.byId;
-
-                        switch (option) {
-                          case SortOption.nameAsc:
-                            displayedList.sort((a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()));
-                            break;
-                          case SortOption.nameDesc:
-                            displayedList.sort((a, b) => b.name.toLowerCase().compareTo(a.name.toLowerCase()));
-                            break;
-                          case SortOption.byId:
-                            displayedList.sort((a, b) => a.id.compareTo(b.id));
-                            break;
-                        }
-
-                        return GridView.builder(
-                          controller: _scrollController,
-                          itemCount: displayedList.length,
-                          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 2,
-                            mainAxisSpacing: 12,
-                            crossAxisSpacing: 12,
-                            childAspectRatio: 0.75,
-                          ),
-                          itemBuilder: (context, index) {
-                            final pokemon = displayedList[index];
-
-                            return ImageCardWidget(
-                              key: ValueKey(pokemon.id),
-                              pokemon: pokemon,
-                              onTap: () {
-                                context.pushNamed(PokemonDetailScreen.name, pathParameters: {'id': '${pokemon.id}'});
-                              },
-                            );
-                          },
-                        );
-                      },
-                    );
-                  },
-                );
-              }
-
-              return const SizedBox.shrink();
+          child: BlocListener<GetPokemonListCubit, GetPokemonListState>(
+            listener: (context, state) {
+              if (state.status == NetworkStatusEnum.isSuccess) {}
             },
+            child: BlocBuilder<GetPokemonListCubit, GetPokemonListState>(
+              builder: (_, pokemonListState) {
+                if (pokemonListState.status == NetworkStatusEnum.isLoading) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+
+                if (pokemonListState.status == NetworkStatusEnum.isError) {
+                  return Center(child: Text(pokemonListState.errorMessage));
+                }
+
+                if (pokemonListState.status == NetworkStatusEnum.isSuccess) {
+                  return GridView.builder(
+                    controller: _scrollController,
+                    itemCount: pokemonListState.pokemonList.length,
+                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2,
+                      mainAxisSpacing: 12,
+                      crossAxisSpacing: 12,
+                      childAspectRatio: 0.75,
+                    ),
+                    itemBuilder: (context, index) {
+                      final pokemon = pokemonListState.pokemonList[index];
+
+                      return ImageCardWidget(
+                        key: ValueKey(pokemon.id),
+                        pokemon: pokemon,
+                        onTap: () {
+                          context.pushNamed(PokemonDetailScreen.name, pathParameters: {'id': '${pokemon.id}'});
+                        },
+                      );
+                    },
+                  );
+                }
+
+                return const SizedBox.shrink();
+              },
+            ),
           ),
         ),
       ),

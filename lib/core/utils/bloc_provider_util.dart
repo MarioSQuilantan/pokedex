@@ -4,10 +4,7 @@ import '../../features/features.dart';
 import '../core.dart';
 
 final List<BlocProvider> blocProviderUtil = [
-  BlocProvider<GetPokemonListBloc>(create: (context) => sl<GetPokemonListBloc>()..add(GetPokemonList())),
-  BlocProvider<GetFavoritePokemonListBloc>(
-    create: (context) => sl<GetFavoritePokemonListBloc>()..add(GetFavoritePokemonList()),
-  ),
-  BlocProvider<SortPokemonListBloc>(create: (context) => sl<SortPokemonListBloc>()),
-  BlocProvider<FilterPokemonListBloc>(create: (context) => sl<FilterPokemonListBloc>()),
+  BlocProvider<GetPokemonListCubit>(create: (context) => sl<GetPokemonListCubit>()..getPokemonList()),
+  BlocProvider<SortPokemonListCubit>(create: (context) => sl<SortPokemonListCubit>()),
+  BlocProvider<FilterPokemonListCubit>(create: (context) => sl<FilterPokemonListCubit>()),
 ];
