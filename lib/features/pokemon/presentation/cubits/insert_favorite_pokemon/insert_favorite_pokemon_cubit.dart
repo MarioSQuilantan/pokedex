@@ -13,7 +13,7 @@ class InsertFavoritePokemonCubit extends Cubit<InsertFavoritePokemonState> {
 
   InsertFavoritePokemonCubit(this.insertFavoritePokemonUseCase) : super(InsertFavoritePokemonState());
 
-  Future<void> insertFavoritePokemon(int id, String name, String imagePath) async {
+  Future<void> insertFavoritePokemon({required int id, required String name, required String imagePath}) async {
     emit(state.copyWith(status: NetworkStatusEnum.isLoading));
 
     final request = InsertFavoritePokemonRequest(id: id, name: name, imagePath: imagePath);
@@ -24,5 +24,7 @@ class InsertFavoritePokemonCubit extends Cubit<InsertFavoritePokemonState> {
       (err) => emit(state.copyWith(status: NetworkStatusEnum.isError, errorMessage: err.message)),
       (values) => emit(state.copyWith(status: NetworkStatusEnum.isSuccess)),
     );
+
+    emit(state.copyWith(status: null));
   }
 }

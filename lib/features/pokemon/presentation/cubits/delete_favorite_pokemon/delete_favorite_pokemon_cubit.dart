@@ -17,8 +17,10 @@ class DeleteFavoritePokemonCubit extends Cubit<DeleteFavoritePokemonState> {
     final response = await deleteFavoritePokemonUseCase(DeleteFavoritePokemonRequest(id: id)).run();
 
     response.match(
-      (err) => emit(state.copyWith(status: NetworkStatusEnum.isSuccess, errorMessage: err.message)),
+      (err) => emit(state.copyWith(status: NetworkStatusEnum.isError, errorMessage: err.message)),
       (_) => emit(state.copyWith(status: NetworkStatusEnum.isSuccess)),
     );
+
+    emit(state.copyWith(status: null));
   }
 }
