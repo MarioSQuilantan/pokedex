@@ -3,15 +3,22 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pokedex/features/pokemon/pokemon.dart';
 
 class FavoriteButtonWidget extends StatelessWidget {
-  final PokemonEntity pokemon;
+  final int pokemonId;
+  final String pokemonName;
+  final String pokemonImagePath;
 
-  const FavoriteButtonWidget({super.key, required this.pokemon});
+  const FavoriteButtonWidget({
+    super.key,
+    required this.pokemonId,
+    required this.pokemonName,
+    required this.pokemonImagePath,
+  });
 
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<GetFavoritePokemonListCubit, GetFavoritePokemonListState>(
       builder: (context, favState) {
-        final isFavorite = favState.favoritePokemonList.any((p) => p.id == pokemon.id);
+        final isFavorite = favState.favoritePokemonList.any((p) => p.id == pokemonId);
 
         final deleteCubit = context.read<DeleteFavoritePokemonCubit>();
         final insertCubit = context.read<InsertFavoritePokemonCubit>();
@@ -20,9 +27,9 @@ class FavoriteButtonWidget extends StatelessWidget {
         return IconButton(
           onPressed: () async {
             if (isFavorite) {
-              await deleteCubit.deleteFavoritePokemon(pokemon.id);
+              await deleteCubit.deleteFavoritePokemon(pokemonId);
             } else {
-              await insertCubit.insertFavoritePokemon(id: pokemon.id, name: pokemon.name, imagePath: pokemon.imagePath);
+              await insertCubit.insertFavoritePokemon(id: pokemonId, name: pokemonName, imagePath: pokemonImagePath);
             }
 
             await favCubit.getFavoritePokemonList();

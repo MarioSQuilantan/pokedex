@@ -22,7 +22,13 @@ class ImageCardWidget extends StatelessWidget {
           children: [
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
-              children: <Widget>[FavoriteButtonWidget(pokemon: pokemon)],
+              children: <Widget>[
+                FavoriteButtonWidget(
+                  pokemonId: pokemon.id,
+                  pokemonName: pokemon.name,
+                  pokemonImagePath: pokemon.imagePath,
+                ),
+              ],
             ),
             CachedNetworkImage(
               imageUrl: pokemon.imagePath,
