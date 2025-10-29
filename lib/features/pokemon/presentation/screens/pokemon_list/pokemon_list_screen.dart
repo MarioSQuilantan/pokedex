@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -18,6 +20,7 @@ class PokemonListScreen extends StatefulWidget {
 class _PokemonListScreenState extends State<PokemonListScreen> {
   final ScrollController _scrollController = ScrollController();
   final TextEditingController _searchController = TextEditingController();
+  Timer? _debounce;
 
   @override
   void initState() {
@@ -37,10 +40,18 @@ class _PokemonListScreenState extends State<PokemonListScreen> {
     _searchController.addListener(_onSearchChanged);
   }
 
-  void _onSearchChanged() {}
+  void _onSearchChanged() {
+    _debounce?.cancel();
+    _debounce = Timer(const Duration(milliseconds: 300), () {
+      final query = _searchController.text.trim();
+      final baseList = context.read<GetPokemonListCubit>().state.pokemonList;
+      context.read<FilterPokemonListCubit>().filterPokemonList(query, baseList);
+    });
+  }
 
   @override
   void dispose() {
+    _debounce?.cancel();
     _scrollController.dispose();
     _searchController.dispose();
     super.dispose();
@@ -49,7 +60,26 @@ class _PokemonListScreenState extends State<PokemonListScreen> {
   void _openSortDialog(BuildContext context) {
     showDialog(
       context: context,
-      builder: (_) => SortDialogWidget(onUpward: () {}, onDownWard: () {}, onById: () {}),
+      builder: (_) => SortDialogWidget(
+        onUpward: () {
+          final baseList = context.read<GetPokemonListCubit>().state.pokemonList;
+          context.read<FilterPokemonListCubit>().filterPokemonList('', baseList);
+          context.read<SortPokemonListCubit>().applySort(SortOptions.nameAsc, baseList);
+          context.pop();
+        },
+        onDownWard: () {
+          final baseList = context.read<GetPokemonListCubit>().state.pokemonList;
+          context.read<FilterPokemonListCubit>().filterPokemonList('', baseList);
+          context.read<SortPokemonListCubit>().applySort(SortOptions.nameDesc, baseList);
+          context.pop();
+        },
+        onById: () {
+          final baseList = context.read<GetPokemonListCubit>().state.pokemonList;
+          context.read<FilterPokemonListCubit>().filterPokemonList('', baseList);
+          context.read<SortPokemonListCubit>().applySort(SortOptions.byId, baseList);
+          context.pop();
+        },
+      ),
     );
   }
 
@@ -92,10 +122,27 @@ class _PokemonListScreenState extends State<PokemonListScreen> {
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(8.0),
-          child: BlocListener<GetPokemonListCubit, GetPokemonListState>(
-            listener: (context, state) {
-              if (state.status == NetworkStatusEnum.isSuccess) {}
-            },
+          child: MultiBlocListener(
+            listeners: [
+              BlocListener<GetPokemonListCubit, GetPokemonListState>(
+                listener: (context, state) {
+                  if (state.status == NetworkStatusEnum.isSuccess) {
+                    final baseList = state.pokemonList;
+
+                    final currentOption = context.read<SortPokemonListCubit>().state.sortOption;
+                    context.read<SortPokemonListCubit>().applySort(currentOption, baseList);
+                  }
+                },
+              ),
+              BlocListener<FilterPokemonListCubit, FilterPokemonListState>(
+                listener: (context, filterState) {
+                  final filtered = filterState.filteredList;
+
+                  final currentOption = context.read<SortPokemonListCubit>().state.sortOption;
+                  context.read<SortPokemonListCubit>().applySort(currentOption, filtered);
+                },
+              ),
+            ],
             child: BlocBuilder<GetPokemonListCubit, GetPokemonListState>(
               builder: (_, pokemonListState) {
                 if (pokemonListState.status == NetworkStatusEnum.isLoading) {
@@ -107,23 +154,31 @@ class _PokemonListScreenState extends State<PokemonListScreen> {
                 }
 
                 if (pokemonListState.status == NetworkStatusEnum.isSuccess) {
-                  return GridView.builder(
-                    controller: _scrollController,
-                    itemCount: pokemonListState.pokemonList.length,
-                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      mainAxisSpacing: 12,
-                      crossAxisSpacing: 12,
-                      childAspectRatio: 0.75,
-                    ),
-                    itemBuilder: (context, index) {
-                      final pokemon = pokemonListState.pokemonList[index];
+                  return BlocBuilder<SortPokemonListCubit, SortPokemonListState>(
+                    builder: (context, sortState) {
+                      final displayedList = sortState.sortedPokemonList.isNotEmpty
+                          ? sortState.sortedPokemonList
+                          : pokemonListState.pokemonList;
 
-                      return ImageCardWidget(
-                        key: ValueKey(pokemon.id),
-                        pokemon: pokemon,
-                        onTap: () {
-                          context.pushNamed(PokemonDetailScreen.name, pathParameters: {'id': '${pokemon.id}'});
+                      return GridView.builder(
+                        controller: _scrollController,
+                        itemCount: displayedList.length,
+                        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          mainAxisSpacing: 12,
+                          crossAxisSpacing: 12,
+                          childAspectRatio: 0.75,
+                        ),
+                        itemBuilder: (context, index) {
+                          final pokemon = displayedList[index];
+
+                          return ImageCardWidget(
+                            key: ValueKey(pokemon.id),
+                            pokemon: pokemon,
+                            onTap: () {
+                              context.pushNamed(PokemonDetailScreen.name, pathParameters: {'id': '${pokemon.id}'});
+                            },
+                          );
                         },
                       );
                     },

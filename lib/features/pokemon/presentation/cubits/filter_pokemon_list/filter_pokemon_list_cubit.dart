@@ -18,7 +18,7 @@ class FilterPokemonListCubit extends Cubit<FilterPokemonListState> {
       return;
     }
 
-    final filtered = baseList.where((p) => p.name.toLowerCase().contains(query)).toList();
+    final filtered = baseList.where((p) => p.name.toLowerCase().contains(newQuery)).toList();
     emit(state.copyWith(filteredList: filtered));
   }
 }
