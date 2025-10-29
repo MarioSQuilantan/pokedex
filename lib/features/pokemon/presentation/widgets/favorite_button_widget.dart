@@ -1,50 +1,38 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
-import '../../application/application.dart';
+import 'package:pokedex/features/pokemon/pokemon.dart';
 
 class FavoriteButtonWidget extends StatelessWidget {
-  final int id;
-  final bool updateFavoriteList;
-  final VoidCallback? onFavoriteChanged;
+  final int pokemonId;
+  final String pokemonName;
+  final String pokemonImagePath;
 
-  const FavoriteButtonWidget({super.key, required this.id, this.updateFavoriteList = false, this.onFavoriteChanged});
+  const FavoriteButtonWidget({
+    super.key,
+    required this.pokemonId,
+    required this.pokemonName,
+    required this.pokemonImagePath,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return BlocSelector<PokemonFavoriteCubit, PokemonFavoriteState, bool>(
-      selector: (state) => (state is PokemonFavoriteLoaded) ? state.favoriteList.any((p) => p.id == id) : false,
-      builder: (context, isFavorite) {
+    return BlocBuilder<GetFavoritePokemonListCubit, GetFavoritePokemonListState>(
+      builder: (context, favState) {
+        final isFavorite = favState.favoritePokemonList.any((p) => p.id == pokemonId);
+
+        final deleteCubit = context.read<DeleteFavoritePokemonCubit>();
+        final insertCubit = context.read<InsertFavoritePokemonCubit>();
+        final favCubit = context.read<GetFavoritePokemonListCubit>();
+
         return IconButton(
           onPressed: () async {
-            final listCubit = context.read<PokemonListCubit>();
-            final favCubit = context.read<PokemonFavoriteCubit>();
-            final messenger = ScaffoldMessenger.of(context);
-            final onChanged = onFavoriteChanged;
-
-            final pokemon = listCubit.state is PokemonItemsLoaded
-                ? (listCubit.state as PokemonItemsLoaded).items.firstWhere((p) => p.id == id)
-                : null;
-
-            final newFav = await favCubit.toggleFavoriteById(id: id, pokemon: pokemon);
-            if (newFav) {
-              messenger.showSnackBar(
-                SnackBar(
-                  content: Text('Pokémon agregado a favoritos'),
-                  backgroundColor: Colors.green,
-                  duration: const Duration(seconds: 2),
-                ),
-              );
+            if (isFavorite) {
+              await deleteCubit.deleteFavoritePokemon(pokemonId);
             } else {
-              messenger.showSnackBar(
-                SnackBar(
-                  content: Text('Pokémon eliminado de favoritos'),
-                  backgroundColor: Colors.red,
-                  duration: const Duration(seconds: 2),
-                ),
-              );
+              await insertCubit.insertFavoritePokemon(id: pokemonId, name: pokemonName, imagePath: pokemonImagePath);
             }
-            if (updateFavoriteList) onChanged?.call();
+
+            await favCubit.getFavoritePokemonList();
           },
           icon: Icon(isFavorite ? Icons.favorite : Icons.favorite_border, color: isFavorite ? Colors.red : Colors.grey),
         );

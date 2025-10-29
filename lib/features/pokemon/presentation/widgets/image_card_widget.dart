@@ -5,18 +5,10 @@ import '../../../../core/core.dart';
 import '../../../features.dart';
 
 class ImageCardWidget extends StatelessWidget {
-  const ImageCardWidget({
-    super.key,
-    required this.pokemon,
-    required this.onTap,
-    this.updateFavoriteList = false,
-    this.onFavoriteChanged,
-  });
+  const ImageCardWidget({super.key, required this.pokemon, required this.onTap});
 
   final PokemonEntity pokemon;
   final Function() onTap;
-  final bool updateFavoriteList;
-  final VoidCallback? onFavoriteChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -32,9 +24,9 @@ class ImageCardWidget extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.end,
               children: <Widget>[
                 FavoriteButtonWidget(
-                  id: pokemon.id,
-                  updateFavoriteList: updateFavoriteList,
-                  onFavoriteChanged: onFavoriteChanged,
+                  pokemonId: pokemon.id,
+                  pokemonName: pokemon.name,
+                  pokemonImagePath: pokemon.imagePath,
                 ),
               ],
             ),

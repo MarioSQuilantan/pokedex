@@ -1,7 +1,11 @@
+import 'package:fpdart/fpdart.dart';
+
+import '../../core.dart';
+
 abstract interface class DatabaseService {
-  Future<dynamic> get(String table);
+  TaskEither<DbException, T> get<T>(String table);
 
-  Future<dynamic> deleteById(String table, int id);
+  TaskEither<DbException, T> deleteById<T>(String table, int id);
 
-  Future<dynamic> insert(String table, Map<String, dynamic> data);
+  TaskEither<DbException, T> insert<T>(String table, Map<String, dynamic> data);
 }
